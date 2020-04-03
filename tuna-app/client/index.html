@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperledger Fabric Tuna Fish Demo App</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/css/bootstrap.min.css" integrity="sha256-H0KfTigpUV+0/5tn2HXC0CPwhhDhWgSawJdnFd0CGCo=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" integrity="sha256-yMjaV542P+q1RnH6XByCPDfUFhmOafWbeLPmqKh11zo=" crossorigin="anonymous" />   
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+<body ng-app="application" ng-controller="appController">
+    <div class="container" ng-init="queryAllTuna()" style="margin-top: 10px;">
+        <div class="col-sm-12 col-lg-12">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNewTunaModal" style="margin-bottom: 10px;">
+                ADD NEW TUNA RECORD
+            </button>
+            
+            <table class="table table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Datetime</th>
+                  <th>Holder</th>
+                  <th>Catch Location <br>(Longitude, Latitude)</th>
+                  <th>Vessel</th>
+                  <th>Action</th>
+                </tr>
+        
+                <tr ng-repeat="tuna in all_tuna">
+                  <td>{{tuna.Key}}</td>
+                  <td>{{tuna.timestamp*1000 | date: 'yyyy-MM-dd HH:mm:ss'}}</td>
+                  <td>{{tuna.holder}}</td>
+                  <td>{{tuna.location}}</td>
+                  <td>{{tuna.vessel}}</td>
+                <td><button class="btn btn-info" data-toggle="modal" data-target="#changeHolder" onclick="passIdToNgModel(this)">Change Holder</button></td>
+                </tr>
+            </table>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="addNewTunaModal" tabindex="-1" role="dialog" aria-labelledby="addNewTunaModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="addNewTunaModalLabel">Add New Tuna Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                              <label for="inputVessel">Vessel</label>
+                              <input type="text" class="form-control" id="inputVessel" placeholder="Ex: 353F" ng-model="tuna.vessel">                         
+                            </div>
+                            <div class="form-group">
+                                <label for="inputLongtitude">Longitude</label>
+                                <input type="text" class="form-control" id="inputLongtitude" placeholder="Ex: 34.4443" ng-model="tuna.longtitude">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputLatitude">Latitude</label>
+                                <input type="text" class="form-control" id="inputLatitude" placeholder="Ex: -67.4443" ng-model="tuna.latitude">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputDatetime">Datetime</label>
+                                <div class='input-group date' id='datetimepicker1'>
+                                    <input type='text' class="form-control" placeholder="Choose date and time" ng-model="tuna.timestamp"/>
+                                    <input type="text" id="tuna_dt" name="inputHiddenfordatetime" ng-model="tuna.timestamp" style="display: none;">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputHolder">Holder</label>
+                                <input type="text" class="form-control" id="inputHolder" placeholder="Enter name of holder" ng-model="tuna.holder"/>
+                            </div>
+                          </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" ng-click="recordTuna()" data-dismiss="modal">Save Record</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Modal for change holder-->
+            <div class="modal fade" id="changeHolder" tabindex="-1" role="dialog" aria-labelledby="addNewTunaModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="changeHolder">Change Holder</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                              <label for="inputHolder">New Holder</label>
+                              <input type="text" id="holder_id" name="inputHiddenfordatetime" ng-model="holder.id" style="display: none;">
+                              <input type="text" class="form-control" id="inputVessel" placeholder="Enter new holder's name" ng-model="holder.name">                         
+                            </div>
+                          </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" ng-click="changeHolder()" data-dismiss="modal">Update Record</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- requiring the angular page -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script type="text/javascript" src="app.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/js/bootstrap.min.js" integrity="sha256-kJrlY+s09+QoWjpkOrXXwhxeaoDz9FW5SaxF8I0DibQ=" crossorigin="anonymous"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js" integrity="sha256-5YmaxAwMjIpMrVlK84Y/+NjCpKnFYa8bWWBbUHSBGfU=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker1').datetimepicker()
+                .on('dp.change', function(e){
+                    if(e.date){
+                        $("#tuna_dt").text(e.date.format());
+                        $("#tuna_dt").trigger('change',null);
+                    }
+                })
+        });
+        function passIdToNgModel(elm) {
+            console.log($(elm).closest("tr").find("td:first-child").text());
+            $("#holder_id").val($(elm).closest("tr").find("td:first-child").text());
+            $("#holder_id").trigger('change',null);
+            console.log($("#holder_id").val()); 
+        }
+    </script>
+</body>
+</html>
