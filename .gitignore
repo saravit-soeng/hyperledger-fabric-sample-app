@@ -16,3 +16,5 @@
 
 ./tuna-app/node_modules/
 ./tuna-app/wallet/
+
+*.test
