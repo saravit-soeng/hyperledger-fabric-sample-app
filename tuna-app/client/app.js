@@ -45,7 +45,7 @@ app.factory('appFactory', function($http) {
             callback(response.data);
             console.log(response);            
         }, err => {
-            console.log("error:"+err);            
+            console.log("error:"+JSON.stringify(err));            
         });
     }
 
@@ -81,3 +81,4 @@ app.factory('appFactory', function($http) {
 
     return factory;
 });
+

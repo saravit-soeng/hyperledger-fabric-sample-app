@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export FABRIC_CFG_PATH=${pwd}
+export FABRIC_CFG_PATH=$PWD
+echo $FABRIC_CFG_PATH
 CHANNEL_NAME=mychannel
 
 # remove previous crypto material and config transaction
@@ -14,8 +15,10 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
-# generate genesis block for orederer
-configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./config/genesis.block
+./ccp-generate.sh
+
+# generate genesis block for orderer
+configtxgen -profile SampleDevModeKafka -outputBlock ./config/genesis.block
 if [ "$?" -ne 0 ]; then
     echo "Failed to generate orderer genesis block"
     exit 1
@@ -24,7 +27,7 @@ fi
 # generate channel configuration transaction
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./config/channel.tx -channelID $CHANNEL_NAME
 if [ "$?" -ne 0 ]; then
-    echo "Failed to generate orderer genesis block"
+    echo "Failed to generate channel configuration"
     exit 1
 fi
 
