@@ -350,7 +350,7 @@ module.exports = (function() {
 ```
 For more detail about how to implement the fabric client, go to check in _tuna-app_ folder in the directory.
 
-#### Enjoy your life!
+#### Enjoy blockchain!
 
 ## Reference
 - https://github.com/hyperledger/fabric-samples
